@@ -39,6 +39,28 @@ namespace Transaction
 
             Console.WriteLine($"Succesfully parsed {transactions.Count} transactions");
             Console.WriteLine($"First transaction: {transactions[0].CustomerId} - {transactions[0].Type} - {transactions[0].Amount}");
+
+            Console.WriteLine("\nValidating transactions, please wait...");
+
+            TransactionChecker checker = new TransactionChecker();
+            int validCount = 0;
+            int invalidCount = 0;
+
+            foreach (Transaction t in transactions)
+            {
+                string reason;
+                if (checker.IsValid(t, out reason))
+                {
+                    validCount++;
+                }
+                else
+                {
+                    invalidCount++;
+                    Console.WriteLine($"Invalid: {t.Step} | {t.CustomerId} | Type: {t.Type} | Amount: {t.Amount} | {t.MerchantId} | Reason: {reason}");
+                }
+            }
+
+            Console.WriteLine($"Valid: {validCount} | Invalid: {invalidCount}");
         }
     }
 }
