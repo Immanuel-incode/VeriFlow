@@ -2,15 +2,15 @@ namespace Backend.Models
 {
     public class Transaction
     {
-        public int Step { get; set; }
-        public string Type { get; set; } = string.Empty;
+        public int Hour { get; set; }
+        public string TransactionType { get; set; } = string.Empty;
         public decimal Amount { get; set; }
-        public string CustomerId { get; set; } = string.Empty;
-        public decimal OldBalanceOrigin { get; set; }
-        public decimal NewBalanceOrigin { get; set; }
-        public string MerchantId { get; set; } = string.Empty;
-        public decimal OldBalanceDest {get; set; }
-        public decimal NewBalanceDest { get; set; }
+        public string SenderId { get; set; } = string.Empty;
+        public decimal SenderBalanceBefore { get; set; }
+        public decimal SenderBalanceAfter { get; set; }
+        public string RecipientId { get; set; } = string.Empty;
+        public decimal RecipientBalanceBefore {get; set; }
+        public decimal RecipientBalanceAfter { get; set; }
         public bool IsFraud { get; set; }
         public bool IsFlaggedFraud { get; set; }
     }
