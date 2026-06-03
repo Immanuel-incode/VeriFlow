@@ -15,15 +15,15 @@ namespace Backend.Services
 
                 var transaction = new Transaction();
 
-                transaction.Step = int.Parse(values[0]);
-                transaction.Type = values[1];
+                transaction.Hour = int.Parse(values[0]);
+                transaction.TransactionType = values[1];
                 transaction.Amount = decimal.Parse(values[2]);
-                transaction.CustomerId = values[3];
-                transaction.OldBalanceOrigin = decimal.Parse(values[4]);
-                transaction.NewBalanceOrigin = decimal.Parse(values[5]);
-                transaction.MerchantId = values[6];
-                transaction.OldBalanceDest = decimal.Parse(values[7]);
-                transaction.NewBalanceDest = decimal.Parse(values[8]);
+                transaction.SenderId = values[3];
+                transaction.SenderBalanceBefore = decimal.Parse(values[4]);
+                transaction.SenderBalanceAfter = decimal.Parse(values[5]);
+                transaction.RecipientId = values[6];
+                transaction.RecipientBalanceBefore = decimal.Parse(values[7]);
+                transaction.RecipientBalanceAfter = decimal.Parse(values[8]);
                 transaction.IsFraud = values[9] == "1";
                 transaction.IsFlaggedFraud = values[10] == "1";
 
@@ -36,11 +36,11 @@ namespace Backend.Services
         public void SaveCsv(List<Transaction> transactions, string outputPath)
         {
             var lines = new List<string>();
-            lines.Add("step,type,amount,customerId,oldBalanceOrigin,newBalanceOrigin,merchantId,oldBalanceDest,newBalanceDest,isFraud,isFlaggedFraud");
+            lines.Add("hour,transaction_type,amount,sender_id,sender_balance_before,sender_balance_after,recipient_id,recipient_balance_before,recipient_balance_after,is_fraud,is_flagged_fraud");
 
             foreach (var transaction in transactions)
             {
-                lines.Add($"{transaction.Step},{transaction.Type},{transaction.Amount},{transaction.CustomerId},{transaction.OldBalanceOrigin},{transaction.NewBalanceOrigin},{transaction.MerchantId},{transaction.OldBalanceDest},{transaction.NewBalanceDest},{transaction.IsFraud},{transaction.IsFlaggedFraud}");
+                lines.Add($"{transaction.Hour},{transaction.TransactionType},{transaction.Amount},{transaction.SenderId},{transaction.SenderBalanceBefore},{transaction.SenderBalanceAfter},{transaction.RecipientId},{transaction.RecipientBalanceBefore},{transaction.RecipientBalanceAfter},{transaction.IsFraud},{transaction.IsFlaggedFraud}");
             }
 
             File.WriteAllLines(outputPath, lines);

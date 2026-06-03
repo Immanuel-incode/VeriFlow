@@ -18,9 +18,9 @@ service.SaveCsv(transactions, outputPath);
 
 Console.WriteLine($"Done! {rowCount} rows have been save to {outputPath}");
 
-Console.WriteLine("\n These are the first few transactions");
+Console.WriteLine("\n Here are the transactions");
 
 foreach (var transaction in transactions)
 {
-    Console.WriteLine($"Step: {transaction.Step} | Type: {transaction.Type} | Amount: {transaction.Amount} | Fraud: {transaction.IsFraud}");
+    Console.WriteLine($"Hour: {transaction.Hour} | Type: {transaction.TransactionType} | Amount: {transaction.Amount} | Fraud: {transaction.IsFraud}");
 }
