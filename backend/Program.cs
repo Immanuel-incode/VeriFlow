@@ -1,4 +1,5 @@
 ﻿using Backend.Services;
+using Microsoft.Extensions.Configuration;
 
 var service = new TransactionService();
 
@@ -15,6 +16,17 @@ var rowCount = int.Parse(input!);
 var transactions = service.LoadCsv(csvPath, rowCount);
 
 service.SaveCsv(transactions, outputPath);
+
+var config = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json")
+    .Build();
+
+var connectionString = config.GetConnectionString("DefaultConnection");
+
+var dbService = new DatabaseService(connectionString!);
+dbService.InsertTransactions(transactions);
+Console.WriteLine($"{rowCount} rows inserted into PostgreSQL.");
 
 Console.WriteLine($"Done! {rowCount} rows have been save to {outputPath}");
 
