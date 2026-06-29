@@ -13,5 +13,7 @@ namespace Backend.Models
         public decimal RecipientBalanceAfter { get; set; }
         public bool IsFraud { get; set; }
         public bool IsFlaggedFraud { get; set; }
+        public decimal SenderBalanceChange => SenderBalanceBefore - SenderBalanceAfter;
+        public decimal RecipientBalanceChange => RecipientBalanceAfter - RecipientBalanceBefore;
     }
 }
