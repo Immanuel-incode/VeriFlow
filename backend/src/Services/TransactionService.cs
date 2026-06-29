@@ -4,10 +4,10 @@ namespace Backend.Services
 {
     public class TransactionService
     {
-        public List<Transaction> LoadCsv (string filePath, int rowCount)
+        public List<Transaction> LoadCsv (string filePath, int startRow, int rowCount)
         {
             var transactions = new List<Transaction>();
-            var lines = File.ReadLines(filePath).Skip(1).Take(rowCount);
+            var lines = File.ReadLines(filePath).Skip(startRow).Take(rowCount);
 
             foreach (var line in lines)
             {
@@ -31,19 +31,6 @@ namespace Backend.Services
             }
 
             return transactions;
-        }
-
-        public void SaveCsv(List<Transaction> transactions, string outputPath)
-        {
-            var lines = new List<string>();
-            lines.Add("hour,transaction_type,amount,sender_id,sender_balance_before,sender_balance_after,recipient_id,recipient_balance_before,recipient_balance_after,is_fraud,is_flagged_fraud");
-
-            foreach (var transaction in transactions)
-            {
-                lines.Add($"{transaction.Hour},{transaction.TransactionType},{transaction.Amount},{transaction.SenderId},{transaction.SenderBalanceBefore},{transaction.SenderBalanceAfter},{transaction.RecipientId},{transaction.RecipientBalanceBefore},{transaction.RecipientBalanceAfter},{transaction.IsFraud},{transaction.IsFlaggedFraud}");
-            }
-
-            File.WriteAllLines(outputPath, lines);
         }
     }
 }
