@@ -46,10 +46,9 @@ if (selectedOperation.Contains("1"))
 
 if (selectedOperation.Contains("2"))
 {
-    Console.WriteLine("--- Stage 2: Data cleaning ---");
-    RunCleaning(transactions);
+    Console.WriteLine("Operation 2: Data cleaning");
+    await RunCleaning(transactions);
 }
-
 //Operation methods
 async Task RunValidation(List<Transaction> transactions)
 {
@@ -144,7 +143,79 @@ void PrintErrors(JsonElement result, string key, string label)
     }
 }
 
-void RunCleaning(List<Transaction> transactions)
+async Task RunCleaning(List<Transaction> transactions)
 {
-    Console.WriteLine("  > Cleaning — coming soon.");
+    Console.WriteLine("\n  Which cleaning operations would you like to run?");
+    Console.WriteLine("  Type the numbers separated by spaces, or press Enter to run all.\n");
+    Console.WriteLine("  1. Strip symbols from amount");
+    Console.WriteLine("  2. Trim whitespace");
+    Console.WriteLine("  3. Fix case (lowercase → UPPERCASE)");
+    Console.WriteLine("  4. Fix spelling (TRANFER → TRANSFER etc)");
+    Console.WriteLine("  5. Remove duplicates");
+    Console.Write("\n  Your selection (or Enter for all): ");
+
+    var opInput = Console.ReadLine() ?? "";
+
+    var opMap = new Dictionary<string, string>
+    {
+        { "1", "removesymbols" },
+        { "2", "removewhitespace" },
+        { "3", "fixcase" },
+        { "4", "fixspelling" },
+        { "5", "removeduplicates" }
+    };
+
+    var selectedOps = opInput
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Where(k => opMap.ContainsKey(k))
+        .Select(k => opMap[k])
+        .ToList();
+
+    if (selectedOps.Count == 0)
+        Console.WriteLine("\n  > Running all cleaning operations...");
+    else
+        Console.WriteLine($"\n  > Running: {string.Join(", ", selectedOps)}");
+
+    Console.WriteLine("  > Sending transactions to Python cleaning...");
+
+    var transactionDicts = transactions.Select(t => new Dictionary<string, object?>
+    {
+        { "step",           t.Hour },
+        { "type",           t.TransactionType },
+        { "amount",         t.Amount },
+        { "nameOrig",       t.SenderId },
+        { "oldbalanceOrig", t.SenderBalanceBefore },
+        { "newbalanceOrig", t.SenderBalanceAfter },
+        { "nameDest",       t.RecipientId },
+        { "oldbalanceDest", t.RecipientBalanceBefore },
+        { "newbalanceDest", t.RecipientBalanceAfter },
+        { "isFraud",        t.IsFraud ? 1 : 0 },
+        { "isFlaggedFraud", t.IsFlaggedFraud ? 1 : 0 }
+    }).ToList();
+
+    var payload = new { transactions = transactionDicts, operations = selectedOps };
+    var json = JsonSerializer.Serialize(payload);
+    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+    using var client = new HttpClient();
+    var response = await client.PostAsync("http://localhost:8000/clean", content);
+    var responseBody = await response.Content.ReadAsStringAsync();
+    var result = JsonSerializer.Deserialize<JsonElement>(responseBody);
+
+    var summary = result.GetProperty("summary");
+    Console.WriteLine($"\n  Cleaning complete:");
+    Console.WriteLine($"  Total input:        {summary.GetProperty("total_input")}");
+    Console.WriteLine($"  Total cleaned:      {summary.GetProperty("total_cleaned")}");
+    Console.WriteLine($"  Quarantined:        {summary.GetProperty("total_quarantined")}");
+    Console.WriteLine($"  Duplicates removed: {summary.GetProperty("duplicates_removed")}");
+
+    var quarantined = result.GetProperty("quarantined_rows");
+    if (quarantined.GetArrayLength() > 0)
+    {
+        Console.WriteLine("\n  Quarantined rows:");
+        foreach (var row in quarantined.EnumerateArray())
+        {
+            Console.WriteLine($"    Row {row.GetProperty("row")} — {row.GetProperty("reason")}");
+        }
+    }
 }
