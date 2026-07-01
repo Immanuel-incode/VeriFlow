@@ -13,6 +13,7 @@ const CHECKS = [
   { id: "consistency",   label: "Consistency" },
 ];
 
+
 export default function PipelineForm({ onResults }: Props) {
   const [file, setFile]               = useState<File | null>(null);
   const [selectedChecks, setSelected] = useState<string[]>([]);
