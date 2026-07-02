@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 from validation import validate_transactions
+from cleaning import clean_transactions
 
 app = FastAPI()
 
@@ -19,6 +20,11 @@ class TransactionRequest(BaseModel):
     transactions: List[dict]
     checks: List[str] = []
 
+class CleanRequest(BaseModel):
+    transactions: List[dict]
+    operations: List[str] = []
+
+
 
 @app.get("/")
 def root():
@@ -28,4 +34,9 @@ def root():
 @app.post("/validate")
 def validate(request: TransactionRequest):
     result = validate_transactions(request.transactions, request.checks)
+    return result
+
+@app.post("/clean")
+def clean(request: CleanRequest):
+    result = clean_transactions(request.transactions, request.operations)
     return result

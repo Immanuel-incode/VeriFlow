@@ -15,5 +15,7 @@ namespace Api.Models
         public bool IsFraud { get; set; }
         public bool IsFlaggedFraud { get; set; }
         public DateTime CreatedAt { get; set; }
+        public decimal SenderBalanceChange => SenderBalanceAfter - SenderBalanceBefore;
+        public decimal RecipientBalanceChange => RecipientBalanceAfter - RecipientBalanceBefore;
     }
 }
