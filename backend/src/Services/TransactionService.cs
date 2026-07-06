@@ -13,9 +13,14 @@ namespace Backend.Services
             {
                 var values = line.Split(',');
 
+                if (values.Length != 11)
+                {
+                    continue;
+                }
+
                 var transaction = new Transaction();
 
-                transaction.Hour = int.Parse(values[0]);
+                transaction.Step = int.Parse(values[0]);
                 transaction.TransactionType = values[1];
                 transaction.Amount = decimal.Parse(values[2]);
                 transaction.SenderId = values[3];
