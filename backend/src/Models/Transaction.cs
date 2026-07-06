@@ -2,7 +2,7 @@ namespace Backend.Models
 {
     public class Transaction
     {
-        public int Hour { get; set; }
+        public int Step { get; set; }
         public string TransactionType { get; set; } = string.Empty;
         public decimal Amount { get; set; }
         public string SenderId { get; set; } = string.Empty;
