@@ -20,7 +20,7 @@ namespace Api.Repositories
 
             connection.Open();
 
-            using var command = new NpgsqlCommand("SELECT id, hour, transaction_type, amount, sender_id, sender_balance_before, sender_balance_after, recipient_id, recipient_balance_before, recipient_balance_after, is_fraud, is_flagged_fraud, created_at FROM transactions", connection);
+            using var command = new NpgsqlCommand("SELECT id, step, transaction_type, amount, sender_id, sender_balance_before, sender_balance_after, recipient_id, recipient_balance_before, recipient_balance_after, is_fraud, is_flagged_fraud, created_at FROM transactions", connection);
 
             using var reader = command.ExecuteReader(); 
 
@@ -29,7 +29,7 @@ namespace Api.Repositories
                 var transaction = new Transaction
                 {
                     Id = reader.GetInt32(0),
-                    Hour = reader.GetInt32(1),
+                    Step = reader.GetInt32(1),
                     TransactionType = reader.GetString(2),
                     Amount = reader.GetDecimal(3),
                     SenderId = reader.GetString(4),
@@ -53,7 +53,7 @@ namespace Api.Repositories
         {
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
-            using var command = new NpgsqlCommand("SELECT id, hour, transaction_type, amount, sender_id, sender_balance_before, sender_balance_after, recipient_id, recipient_balance_before, recipient_balance_after, is_fraud, is_flagged_fraud, created_at FROM transactions WHERE id = @id", connection);
+            using var command = new NpgsqlCommand("SELECT id, step, transaction_type, amount, sender_id, sender_balance_before, sender_balance_after, recipient_id, recipient_balance_before, recipient_balance_after, is_fraud, is_flagged_fraud, created_at FROM transactions WHERE id = @id", connection);
             command.Parameters.AddWithValue("@id", id);
 
             using var reader = command.ExecuteReader();
@@ -62,7 +62,7 @@ namespace Api.Repositories
                 return new Transaction
                 {
                     Id = reader.GetInt32(0),
-                    Hour = reader.GetInt32(1),
+                    Step = reader.GetInt32(1),
                     TransactionType = reader.GetString(2),
                     Amount = reader.GetDecimal(3),
                     SenderId = reader.GetString(4),
@@ -85,14 +85,14 @@ namespace Api.Repositories
             var transactions = new List<Transaction>();
             using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
-            using var command = new NpgsqlCommand("SELECT id, hour, transaction_type, amount, sender_id, sender_balance_before, sender_balance_after, recipient_id, recipient_balance_before, recipient_balance_after, is_fraud, is_flagged_fraud, created_at FROM transactions WHERE is_fraud = true", connection);
+            using var command = new NpgsqlCommand("SELECT id, step, transaction_type, amount, sender_id, sender_balance_before, sender_balance_after, recipient_id, recipient_balance_before, recipient_balance_after, is_fraud, is_flagged_fraud, created_at FROM transactions WHERE is_fraud = true", connection);
             using var reader = command.ExecuteReader();
             while (reader.Read())
             {
                 var transaction = new Transaction
                 {
                     Id = reader.GetInt32(0),
-                    Hour = reader.GetInt32(1),
+                    Step = reader.GetInt32(1),
                     TransactionType = reader.GetString(2),
                     Amount = reader.GetDecimal(3),
                     SenderId = reader.GetString(4),

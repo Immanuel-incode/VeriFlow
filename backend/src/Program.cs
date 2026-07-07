@@ -91,7 +91,7 @@ async Task RunValidation(List<Transaction> transactions)
 
     var transactionDicts = transactions.Select(t => new Dictionary<string, object?>
     {
-        { "step",           t.Hour },
+        { "step",           t.Step },
         { "type",           t.TransactionType },
         { "amount",         t.Amount },
         { "nameOrig",       t.SenderId },
@@ -180,7 +180,7 @@ async Task RunCleaning(List<Transaction> transactions)
 
     var transactionDicts = transactions.Select(t => new Dictionary<string, object?>
     {
-        { "step",           t.Hour },
+        { "step",           t.Step },
         { "type",           t.TransactionType },
         { "amount",         t.Amount },
         { "nameOrig",       t.SenderId },
