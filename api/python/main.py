@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, Form
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import pandas as pd
@@ -52,7 +52,6 @@ async def validate(
 #Data cleaning endpoint
 @app.post("/clean")
 async def clean(
-    transactions: UploadFile = File(...),
     checks: List[str] = Form(default=[]),
 ):
     transaction_list = load_transactions()
