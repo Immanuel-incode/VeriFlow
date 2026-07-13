@@ -22,7 +22,6 @@ const CLEANING_OPERATIONS = [
 ];
 
 const PipelineForm: React.FC<Props> = ({ onResults }) => {
-  const [file, setFile] = useState<File | null>(null);
 
   const [operation, setOperation] = useState<
     "validation" | "cleaning"
@@ -45,18 +44,12 @@ const PipelineForm: React.FC<Props> = ({ onResults }) => {
   ) => {
     e.preventDefault();
 
-    if (!file) {
-      alert("Please upload a CSV file.");
-      return;
-    }
-
     if (selectedChecks.length === 0) {
       alert("Please select at least one option.");
       return;
     }
 
     const formData = new FormData();
-    formData.append("transactions", file);
 
     selectedChecks.forEach((item) =>
       formData.append("checks", item)
@@ -81,13 +74,13 @@ const PipelineForm: React.FC<Props> = ({ onResults }) => {
 
       const data = await response.json();
 
-      // Identify which operation produced the results
       data.operation = operation;
 
       onResults(data);
+
     } catch (err) {
       console.error(err);
-      alert("An error occurred while processing the file.");
+      alert("An error occurred while processing the dataset.");
     } finally {
       setLoading(false);
     }
@@ -96,21 +89,7 @@ const PipelineForm: React.FC<Props> = ({ onResults }) => {
   return (
     <form className="pipeline-form" onSubmit={handleSubmit}>
       <h2>Transaction Processing Pipeline</h2>
-
-      <div style={{ marginBottom: "20px" }}>
-        <label>
-          Upload CSV
-          <br />
-          <input
-            type="file"
-            accept=".csv"
-            onChange={(e) =>
-              setFile(e.target.files?.[0] || null)
-            }
-          />
-        </label>
-      </div>
-
+      <p style={{ marginBottom: "20px", color: "#666" }}>The PaySim transaction dataset has been loaded automatically by the system. Select an operation and the checks to perform.</p>
       <div style={{ marginBottom: "20px" }}>
         <h3>Select Operation</h3>
 
