@@ -6,6 +6,7 @@ from pathlib import Path
 
 from validation import validate_transactions
 from cleaning import clean_transactions
+from enrichment import enrich_transactions
 
 app = FastAPI()
 
@@ -73,6 +74,29 @@ async def clean(
     ]
 #Runs the selected cleaning operations
     return clean_transactions(
+        transaction_list,
+        operations
+    )
+#Data enrichment endpoint
+@app.post("/enrich")
+async def enrich(
+    checks: List[str] = Form(default=[]),
+):
+#Load the transaction dataset
+    transaction_list = load_transactions()
+#Map frontend checkbox IDs to backend enrichment operations
+    operation_map = {
+            "generate_risk_level": "risklevel",
+            "calculate_sender_balance_difference": "senderbalancedifference",
+            "calculate_recipient_balance_difference": "recipientbalancedifference",
+        }
+#Convert selected frontend options into backend operations
+    operations = [
+        operation_map.get(item, item)
+        for item in checks
+    ]
+#Run the selected enrichment operations
+    return enrich_transactions(
         transaction_list,
         operations
     )
