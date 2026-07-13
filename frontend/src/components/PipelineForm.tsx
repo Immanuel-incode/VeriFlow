@@ -20,13 +20,18 @@ const CLEANING_OPERATIONS = [
   {id: "fixspelling", label: "Fix Spelling",},
   {id: "removeduplicates", label: "Remove Duplicate Records",},
 ];
-
+//Available enrichment operations
+const ENRICHMENT_OPERATIONS = [
+  {id: "generate_risk_level", label: "Generate Risk Level",},
+  {id: "calculate_sender_balance_difference", label: "Calculate Sender Balance Difference",},
+  {id: "calculate_recipient_balance_difference", label: "Calculate Recipient Balance Difference",},
+];
 const PipelineForm: React.FC<Props> = ({ onResults }) => {
 //stores the selected pipeline operations
   const [operation, setOperation] = useState<
-    "validation" | "cleaning"
+    "validation" | "cleaning" | "enrichment"
   >("validation");
-//Stores the selected options for the current pipline stage
+//Stores the selected options for the current pipeline stage
   const [selectedChecks, setSelectedChecks] = useState<string[]>([]);
 //Tracks if the pipeline is still running
   const [loading, setLoading] = useState(false);
@@ -38,7 +43,7 @@ const PipelineForm: React.FC<Props> = ({ onResults }) => {
         : [...prev, id]
     );
   };
-//Submts the selected peration to the backend
+//Submts the selected operation to the backend
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
@@ -63,7 +68,9 @@ const PipelineForm: React.FC<Props> = ({ onResults }) => {
       const endpoint =
         operation === "validation"
           ? "http://127.0.0.1:8000/validate"
-          : "http://127.0.0.1:8000/clean";
+          : operation === "cleaning"
+          ? "http://127.0.0.1:8000/clean"
+          : "http://127.0.0.1:8000/enrich";
 //Sends the selected option to the backend
       const response = await fetch(endpoint, {
         method: "POST",
@@ -125,18 +132,36 @@ const PipelineForm: React.FC<Props> = ({ onResults }) => {
           />
           Data Cleaning
         </label>
+        <label style={{ marginLeft: "20px" }}>
+        <input
+          type="radio"
+          value="enrichment"
+          checked={operation === "enrichment"}
+          onChange={() => {
+//Switch to data enrichment mode
+            setOperation("enrichment");
+//Clears previous selected option
+            setSelectedChecks([]);
+          }}
+        />
+        Data Enrichment
+      </label>
       </div>
 
       <div style={{ marginBottom: "20px" }}>
         <h3>
           {operation === "validation"
             ? "Validation Checks"
-            : "Cleaning Operations"}
+            : operation === "cleaning"
+            ? "Cleaning Operations"
+            : "Enrichment Operations"}
         </h3>
-{/*Displays validation checks or cleaning operations*/}
+{/*Displays the selected pipeline operations*/}
         {(operation === "validation"
-          ? VALIDATION_CHECKS
-          : CLEANING_OPERATIONS
+            ? VALIDATION_CHECKS
+            : operation === "cleaning"
+            ? CLEANING_OPERATIONS
+            : ENRICHMENT_OPERATIONS
         ).map((item) => (
           <div key={item.id}>
             <label>
@@ -156,7 +181,9 @@ const PipelineForm: React.FC<Props> = ({ onResults }) => {
           ? "Processing..."
           : operation === "validation"
           ? "Run Validation"
-          : "Run Cleaning"}
+          : operation === "cleaning"
+          ? "Run Cleaning"
+          : "Run Enrichment"}
       </button>
     </form>
   );
