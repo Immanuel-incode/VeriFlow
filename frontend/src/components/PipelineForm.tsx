@@ -3,7 +3,7 @@ import React, { useState } from "react";
 interface Props {
   onResults: (data: any) => void;
 }
-
+//Available checks for data validation
 const VALIDATION_CHECKS = [
   {id: "completeness", label: "Completeness Check",},
   {id: "datatype", label: "Data Type Check",},
@@ -12,7 +12,7 @@ const VALIDATION_CHECKS = [
   {id: "allowedvalues", label: "Allowed Values Check",},
   {id: "consistency", label: "Consistency Check",},
 ];
-
+//Available operations for data cleaning
 const CLEANING_OPERATIONS = [
   {id: "stripsymbols", label: "Strip Currency Symbols",},
   {id: "trimwhitespace", label: "Trim Whitespace",},
@@ -22,15 +22,15 @@ const CLEANING_OPERATIONS = [
 ];
 
 const PipelineForm: React.FC<Props> = ({ onResults }) => {
-
+//stores the selected pipeline operations
   const [operation, setOperation] = useState<
     "validation" | "cleaning"
   >("validation");
-
+//Stores the selected options for the current pipline stage
   const [selectedChecks, setSelectedChecks] = useState<string[]>([]);
-
+//Tracks if the pipeline is still running
   const [loading, setLoading] = useState(false);
-
+//Add or removes a selected checkbox operation
   const handleCheckbox = (id: string) => {
     setSelectedChecks((prev) =>
       prev.includes(id)
@@ -38,19 +38,20 @@ const PipelineForm: React.FC<Props> = ({ onResults }) => {
         : [...prev, id]
     );
   };
-
+//Submts the selected peration to the backend
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
+//prevents the page from refreshing
     e.preventDefault();
-
+//Ensures at least one option is selected
     if (selectedChecks.length === 0) {
       alert("Please select at least one option.");
       return;
     }
-
+//Prepares a form data for the API request
     const formData = new FormData();
-
+//Adds selected options to the request
     selectedChecks.forEach((item) =>
       formData.append("checks", item)
     );
@@ -58,11 +59,12 @@ const PipelineForm: React.FC<Props> = ({ onResults }) => {
     setLoading(true);
 
     try {
+//Determines which endpoint to call upon
       const endpoint =
         operation === "validation"
           ? "http://127.0.0.1:8000/validate"
           : "http://127.0.0.1:8000/clean";
-
+//Sends the selected option to the backend
       const response = await fetch(endpoint, {
         method: "POST",
         body: formData,
@@ -73,15 +75,16 @@ const PipelineForm: React.FC<Props> = ({ onResults }) => {
       }
 
       const data = await response.json();
-
+//Identifies which operation generated the results
       data.operation = operation;
-
+//Passes the result to the parent component
       onResults(data);
 
     } catch (err) {
       console.error(err);
       alert("An error occurred while processing the dataset.");
     } finally {
+//Re-enables the interface after processing
       setLoading(false);
     }
   };
@@ -99,7 +102,9 @@ const PipelineForm: React.FC<Props> = ({ onResults }) => {
             value="validation"
             checked={operation === "validation"}
             onChange={() => {
+//switch to validation mode
               setOperation("validation");
+//Clears previous selected option
               setSelectedChecks([]);
             }}
           />
@@ -112,7 +117,9 @@ const PipelineForm: React.FC<Props> = ({ onResults }) => {
             value="cleaning"
             checked={operation === "cleaning"}
             onChange={() => {
+//Switch to data cleaning mode
               setOperation("cleaning");
+//Clears previous selected option
               setSelectedChecks([]);
             }}
           />
@@ -126,7 +133,7 @@ const PipelineForm: React.FC<Props> = ({ onResults }) => {
             ? "Validation Checks"
             : "Cleaning Operations"}
         </h3>
-
+{/*Displays validation checks or cleaning operations*/}
         {(operation === "validation"
           ? VALIDATION_CHECKS
           : CLEANING_OPERATIONS
