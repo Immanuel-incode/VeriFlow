@@ -71,7 +71,7 @@ export default function EnrichmentReport({ data }: Props) {
       <DataPreview rows={data.enriched_transactions}
         columns={["amount", "riskLevel", "senderBalanceDifference", "recipientBalanceDifference"]}
       />
-      <DownloadButton rows={data.cleaned_transactions} filename="cleaned_transactions.csv"/>
+      <DownloadButton rows={data.enriched_transactions} filename="enriched_transactions.csv"/>
     </div>
   );
 }
