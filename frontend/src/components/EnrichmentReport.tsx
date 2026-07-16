@@ -1,3 +1,5 @@
+import DataPreview from "./DataPreview";
+import DownloadButton from "./DownloadButton";
 interface Props {
   data: any;
 }
@@ -66,6 +68,10 @@ export default function EnrichmentReport({ data }: Props) {
           <li>recipientBalanceDifference</li>
         )}
       </ul>
+      <DataPreview rows={data.enriched_transactions}
+        columns={["amount", "riskLevel", "senderBalanceDifference", "recipientBalanceDifference"]}
+      />
+      <DownloadButton rows={data.cleaned_transactions} filename="cleaned_transactions.csv"/>
     </div>
   );
 }

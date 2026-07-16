@@ -1,3 +1,5 @@
+import DataPreview from "./DataPreview";
+import DownloadButton from "./DownloadButton";
 interface Props {
   data: any;
 }
@@ -55,6 +57,8 @@ export default function CleaningReport({ data }: Props) {
           }
         </ul>
       }
+      <DataPreview rows={data.cleaned_transactions}/>
+      <DownloadButton rows={data.cleaned_transactions} filename="cleaned_transactions.csv"/>
     </div>
   );
 }
