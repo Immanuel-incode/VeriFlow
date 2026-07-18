@@ -4,13 +4,12 @@
 def enrich_transactions(transactions: list, operations: list = []) -> dict:
 #Stores enriched rows
     enriched_rows = []
-#Run all data cleaning operations if none is selected
+    #Run all data cleaning operations if none is selected
     run_all = len(operations) == 0
-
     for transaction in transactions:
-# Create a copy to preserve the original transaction
+    # Create a copy to preserve the original transaction
         t = dict(transaction)
-# Generate transaction risk level
+    # Generate transaction risk level
         if run_all or "risklevel" in operations:
             try:
                 amount = float(t.get("amount", 0))
@@ -22,7 +21,7 @@ def enrich_transactions(transactions: list, operations: list = []) -> dict:
                     t["riskLevel"] = "High"
             except (ValueError, TypeError):
                 t["riskLevel"] = "Unknown"
-# Calculate sender balance difference
+    # Calculate sender balance difference
         if run_all or "senderbalancedifference" in operations:
             try:
                 old_balance = float(t.get("oldbalanceOrig", 0))
@@ -33,7 +32,7 @@ def enrich_transactions(transactions: list, operations: list = []) -> dict:
                 )
             except (ValueError, TypeError):
                 t["senderBalanceDifference"] = None
-# Calculate recipient balance difference
+    # Calculate recipient balance difference
         if run_all or "recipientbalancedifference" in operations:
             try:
                 old_balance = float(t.get("oldbalanceDest", 0))
